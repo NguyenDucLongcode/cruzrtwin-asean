@@ -1,0 +1,65 @@
+{
+  "info": {
+    "name": "FIWARE Orion CRUD Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET /version",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:1026/version"
+      }
+    },
+    {
+      "name": "POST /entities (Create)",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:1026/v2/entities",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id\": \"urn:ngsi-ld:TemperatureSensor:test_001\",\n  \"type\": \"TemperatureSensor\",\n  \"TimeInstant\": { \"type\": \"DateTime\", \"value\": \"2026-04-26T10:00:00Z\" },\n  \"temperature\": { \"type\": \"Number\", \"value\": 25.5 }\n}"
+        }
+      }
+    },
+    {
+      "name": "GET /entities/{id}",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:1026/v2/entities/urn:ngsi-ld:TemperatureSensor:test_001"
+      }
+    },
+    {
+      "name": "PATCH /entities/{id}/attrs (Update)",
+      "request": {
+        "method": "PATCH",
+        "url": "http://localhost:1026/v2/entities/urn:ngsi-ld:TemperatureSensor:test_001/attrs",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"temperature\": { \"type\": \"Number\", \"value\": 45.0 }\n}"
+        }
+      }
+    },
+    {
+      "name": "DELETE /entities/{id}",
+      "request": {
+        "method": "DELETE",
+        "url": "http://localhost:1026/v2/entities/urn:ngsi-ld:TemperatureSensor:test_001"
+      }
+    },
+    {
+      "name": "POST /subscriptions (Create Alert)",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:1026/v2/subscriptions",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"description\": \"High temperature alert\",\n  \"subject\": {\n    \"entities\": [{ \"idPattern\": \".*\", \"type\": \"TemperatureSensor\" }],\n    \"condition\": { \"attrs\": [\"temperature\"], \"expression\": { \"q\": \"temperature>35\" } }\n  },\n  \"notification\": { \"http\": { \"url\": \"http://localhost:8000/alert\" }, \"attrs\": [\"temperature\"] }\n}"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "id": "urn:ngsi-ld:SmokeSensor:sensor_003",
+  "type": "SmokeSensor",
+  "TimeInstant": {
+    "type": "DateTime",
+    "value": "2026-04-26T10:00:00Z",
+    "metadata": {}
+  },
+  "smokeLevel": {
+    "type": "Number",
+    "value": 120,
+    "metadata": {
+      "unit": {
+        "value": "ppm"
+      }
+    }
+  },
+  "alarm": {
+    "type": "Boolean",
+    "value": false,
+    "metadata": {}
+  },
+  "battery": {
+    "type": "Number",
+    "value": 78,
+    "metadata": {
+      "unit": {
+        "value": "percent"
+      }
+    }
+  },
+  "status": {
+    "type": "Text",
+    "value": "online",
+    "metadata": {}
+  }
+}
