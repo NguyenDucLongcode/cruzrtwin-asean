@@ -9,6 +9,8 @@ services:
       - "27017:27017"
     volumes:
       - cruzrtwin_mongo_data:/data/db
+    networks:
+      - fiware-net
 
   orion:
     image: fiware/orion:3.10.0
@@ -19,6 +21,11 @@ services:
     ports:
       - "1026:1026"
     command: -dbhost mongo -logLevel DEBUG
+    networks:
+      - fiware-net
 
 volumes:
   cruzrtwin_mongo_data:
+
+networks:
+  fiware-net:
