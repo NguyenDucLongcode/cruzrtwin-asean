@@ -5,6 +5,11 @@ from datetime import datetime
 
 router = APIRouter(prefix="/api/risk", tags=["Risk"])
 
+# ==================== RISK ENDPOINTS ====================
+
+# Endpoint để lấy tổng quan risk score cho tất cả thiết bị
+# summary tổng thể và chi tiết theo thiết bị, highlight các thiết bị có risk cao
+# Endpoint này sẽ giúp dashboard hiển thị nhanh tình hình rủi ro hiện tại của toàn bộ hệ thống, đồng thời cung cấp thông tin chi tiết cho từng thiết bị để người dùng có thể dễ dàng nhận biết và xử lý các vấn đề tiềm ẩn.
 @router.get("/summary")
 def get_risk_summary():
     """Lấy tổng quan risk score"""
@@ -35,6 +40,10 @@ def get_risk_summary():
         "timestamp": datetime.now().isoformat()
     }
 
+
+# Endpoint để lấy risk score cho 1 thiết bị cụ thể
+# Endpoint này sẽ giúp người dùng có thể kiểm tra chi tiết mức độ rủi ro của từng thiết bị,
+#  từ đó có thể đưa ra các biện pháp xử lý phù hợp để giảm thiểu rủi ro và đảm bảo an toàn cho hệ thống.
 @router.get("/{device_id}")
 def get_device_risk(device_id: str):
     """Lấy risk score cho 1 thiết bị"""

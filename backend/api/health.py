@@ -5,6 +5,9 @@ from config import FIWARE_ORION_URL
 
 router = APIRouter(tags=["Health"])
 
+# ==================== HEALTH CHECK ENDPOINT ====================
+
+# Endpoint để kiểm tra sức khỏe của service và kết nối FIWARE
 @router.get("/health")
 def health_check():
     """

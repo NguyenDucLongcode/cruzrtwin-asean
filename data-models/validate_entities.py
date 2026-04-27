@@ -32,7 +32,7 @@ def validate_entity(file_path):
         print(f"{file_path}: Hợp lệ")
         return True
     except jsonschema.exceptions.ValidationError as e:
-        print(f"❌ {file_path}: Không hợp lệ - {e.message}")
+        print(f"{file_path}: Không hợp lệ - {e.message}")
         return False
 
 # Validate tất cả 5 file

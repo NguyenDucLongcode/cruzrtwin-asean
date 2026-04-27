@@ -1,7 +1,8 @@
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
-from api import sensors, risk, energy, webhook, health
+from api import sensors, risk, energy, webhook, health, alerts
 from websocket.ws_handler import websocket_handler
 
 app = FastAPI(
@@ -20,7 +21,7 @@ app.add_middleware(
 )
 
 # ==================== INCLUDE ROUTERS ====================
-api_routers = [sensors.router, risk.router, energy.router, webhook.router, health.router]
+api_routers = [sensors.router, risk.router, energy.router, webhook.router, health.router, alerts.router]
 for router in api_routers:
     app.include_router(router)
 
@@ -38,6 +39,7 @@ def root():
             "/api/sensors",
             "/api/risk",
             "/api/energy/stats",
+            "/api/alerts",
             "/api/webhook/anomaly",
         ]
     }
@@ -50,4 +52,5 @@ async def websocket_endpoint(websocket: WebSocket):
 # ==================== RUN SERVER ====================
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    port = int(os.getenv("BACKEND_PORT", "8000"))
+    uvicorn.run(app, host="0.0.0.0", port=port, reload=False)

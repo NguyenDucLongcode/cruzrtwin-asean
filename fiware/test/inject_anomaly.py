@@ -17,7 +17,7 @@ def inject_high_temperature(device_id="matter_temp_sensor_001", temp=40.0):
     headers = {"Content-Type": "application/json"}
     
     response = requests.patch(url, headers=headers, json=payload)
-    print(f"🌡️ Injected temperature: {temp}°C → {response.status_code}")
+    print(f"Injected temperature: {temp}°C → {response.status_code}")
     return response.status_code == 204
 
 def inject_high_smoke(device_id="matter_smoke_sensor_001", smoke=350):
@@ -32,7 +32,7 @@ def inject_high_smoke(device_id="matter_smoke_sensor_001", smoke=350):
     headers = {"Content-Type": "application/json"}
     
     response = requests.patch(url, headers=headers, json=payload)
-    print(f"🔥 Injected smoke: {smoke}ppm → {response.status_code}")
+    print(f"Injected smoke: {smoke}ppm → {response.status_code}")
     return response.status_code == 204
 
 def inject_high_co2(device_id="matter_airquality_001", co2=1200):
@@ -47,12 +47,12 @@ def inject_high_co2(device_id="matter_airquality_001", co2=1200):
     headers = {"Content-Type": "application/json"}
     
     response = requests.patch(url, headers=headers, json=payload)
-    print(f"💨 Injected CO2: {co2}ppm → {response.status_code}")
+    print(f"Injected CO2: {co2}ppm → {response.status_code}")
     return response.status_code == 204
 
 def reset_to_normal():
     """Reset về giá trị bình thường"""
-    print("\n🔄 Resetting to normal values...")
+    print("\nResetting to normal values...")
     
     # Reset temperature
     url = f"{FIWARE_ORION_URL}/entities/matter_temp_sensor_001/attrs"
@@ -69,30 +69,30 @@ def reset_to_normal():
     payload = {"co2": {"type": "Number", "value": 420}}
     requests.patch(url, json=payload)
     
-    print("✅ Reset complete")
+    print("Reset complete")
 
 if __name__ == "__main__":
     print("=" * 60)
-    print("🧪 T-16: Testing Anomaly Injection")
+    print("T-16: Testing Anomaly Injection")
     print("=" * 60)
     
     # Test high temperature
-    print("\n📊 Test 1: High Temperature (40°C)")
+    print("\n   Test 1: High Temperature (40°C)")
     print(f"   Time: {datetime.now().isoformat()}")
     inject_high_temperature(temp=40.0)
     time.sleep(1)
     
-    print("\n📊 Test 2: High Smoke (350ppm)")
+    print("\n  Test 2: High Smoke (350ppm)")
     print(f"   Time: {datetime.now().isoformat()}")
     inject_high_smoke(smoke=350)
     time.sleep(1)
     
-    print("\n📊 Test 3: High CO2 (1200ppm)")
+    print("\n  Test 3: High CO2 (1200ppm)")
     print(f"   Time: {datetime.now().isoformat()}")
     inject_high_co2(co2=1200)
     
     print("\n" + "=" * 60)
-    print("✅ Anomaly injection complete!")
+    print("  Anomaly injection complete!")
     print("   Check backend logs for alert notifications")
     print("=" * 60)
     

@@ -12,10 +12,12 @@ _ANOMALY_MODEL_LOAD_ERROR = None
 _FEATURE_COLUMNS = ["temperature", "humidity", "smoke", "co2", "power"]
 
 
+# Helper function để lấy root của project, dùng để tìm file AI model/optimizer
 def _project_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
 
+# Helper function để resolve đường dẫn đến anomaly_model.pkl, hỗ trợ cả khi chạy từ root hay từ backend/
 def _resolve_anomaly_model_path() -> Path:
     root = _project_root()
     candidates = [
@@ -28,6 +30,7 @@ def _resolve_anomaly_model_path() -> Path:
     raise FileNotFoundError("anomaly_model.pkl not found in expected paths")
 
 
+# Helper function để load AI anomaly detection model từ file, nếu có
 def _get_anomaly_model():
     global _ANOMALY_MODEL, _ANOMALY_MODEL_LOAD_ERROR
     if _ANOMALY_MODEL is not None:
@@ -44,6 +47,7 @@ def _get_anomaly_model():
         return None
 
 
+# Helper function để tạo message alert dựa trên loại entity và dữ liệu bất thường
 def _predict_anomaly(sensor_data: SensorData):
     model = _get_anomaly_model()
     if model is None:
@@ -62,6 +66,8 @@ def _predict_anomaly(sensor_data: SensorData):
     pred = model.predict(sample)[0]
     return pred == -1
 
+# Tính risk score dựa trên dữ liệu cảm biến, kết hợp rule-based và 
+# AI model để đánh giá mức độ rủi ro. AI model sẽ giúp phát hiện các mẫu dữ liệu
 def calculate_risk_score(sensor_data: SensorData) -> RiskScore:
     """Tính risk score dựa trên dữ liệu cảm biến"""
     risk = 0

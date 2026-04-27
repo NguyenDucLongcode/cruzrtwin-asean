@@ -1,19 +1,20 @@
 # Backend Module - API and Integration Guide
 
-Module backend cung cấp REST API và WebSocket cho dashboard, đồng bộ dữ liệu từ FIWARE, và tích hợp AI để đánh giá rủi ro + tối ưu năng lượng.
+Module backend cung cap REST API va WebSocket cho dashboard, dong bo du lieu tu FIWARE Orion, xu ly alert tu webhook, va tich hop AI cho risk + energy.
 
 ---
 
-## Mục tiêu
+## Muc tieu
 
-- Cung cấp API đọc dữ liệu sensor theo thời gian thực từ FIWARE Orion
-- Tính toán risk score cho từng thiết bị và tổng quan hệ thống
-- Phân tích năng lượng và đề xuất FIWARE command từ AI optimizer
-- Hỗ trợ thực thi command xuống Orion với chế độ an toàn dry-run
+- Cung cap API doc du lieu sensor theo thoi gian thuc tu FIWARE Orion
+- Tinh risk score cho tung thiet bi va tong quan he thong
+- Phan tich nang luong va de xuat FIWARE command tu AI optimizer
+- Ho tro thuc thi command xuong Orion voi che do an toan dry-run
+- Nhan webhook anomaly tu FIWARE, broadcast qua WebSocket va forward sang robot API
 
 ---
 
-## Cấu trúc thư mục
+## Cau truc thu muc
 
 ```text
 backend/
@@ -24,43 +25,64 @@ backend/
 |  |- sensors.py
 |  |- risk.py
 |  |- energy.py
+|  |- webhook.py
+|  |- health.py
 |  `- alerts.py
 |- services/
 |  |- fiware_service.py
 |  |- risk_service.py
 |  |- energy_service.py
+|  |- alert_service.py
 |  `- websocket_manager.py
+|- websocket/
+|  `- ws_handler.py
 `- tests/
    `- test_api_regression.py
 ```
 
 ---
 
-## Các endpoint chính
+## Router dang include trong app
 
-- GET / : thông tin service và danh sách endpoint
-- GET /health : health check và kết nối Orion
-- GET /api/sensors/ : lấy tất cả sensor
-- GET /api/sensors/{device_id} : lấy 1 sensor theo id
-- GET /api/risk/summary : tổng quan risk score
-- GET /api/risk/{device_id} : risk score theo thiết bị
-- GET /api/energy/stats : thống kê năng lượng gọn
-- GET /api/energy/analysis : phân tích năng lượng chi tiết (AI + recommendation + command)
-- POST /api/energy/execute : thực thi FIWARE command (mặc định dry-run)
-- WS /ws : kênh WebSocket cho ping/pong và alert
+Trong `main.py`, backend include cac router sau:
+
+- `sensors.router` (prefix `/api/sensors`)
+- `risk.router` (prefix `/api/risk`)
+- `energy.router` (prefix `/api/energy`)
+- `webhook.router` (prefix `/api/webhook`)
+- `health.router` (route `/health`)
+- `alerts.router` (prefix `/api/alerts`)
 
 ---
 
-## Hướng dẫn chạy backend
+## Cac endpoint chinh
 
-Từ thư mục root project:
+- GET `/` : thong tin service va danh sach endpoint co ban
+- GET `/health` : health check service + ket noi Orion (`/version`)
+- GET `/api/sensors/` : lay tat ca sensor
+- GET `/api/sensors/{device_id}` : lay 1 sensor theo id
+- GET `/api/risk/summary` : tong quan risk score toan he thong
+- GET `/api/risk/{device_id}` : risk score theo thiet bi
+- GET `/api/energy/stats` : thong ke nang luong tong hop
+- GET `/api/energy/analysis` : phan tich nang luong chi tiet (AI/rule-based + recommendation + fiware_commands)
+- POST `/api/energy/execute` : thuc thi FIWARE command (mac dinh dry-run)
+- POST `/api/webhook/anomaly` : nhan anomaly alert tu FIWARE subscription
+- GET `/api/alerts/` : lay danh sach alert gan nhat cho dashboard
+- GET `/api/alerts/latest` : lay alert moi nhat
+- WS `/ws` : kenh WebSocket cho connection message, ping/pong va alert
+
+---
+
+## Huong dan chay backend
+
+Tu thu muc root project:
 
 ```bash
 cd backend
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-Kiểm tra nhanh:
+Kiem tra nhanh:
 
 ```text
 http://localhost:8000/health
@@ -69,51 +91,53 @@ http://localhost:8000/docs
 
 ---
 
-## Luồng tích hợp
+## Luong tich hop
 
 ```text
 FIMAT -> FIWARE Orion -> Backend services -> API/WebSocket -> Dashboard
                               |
-                              +-> Risk service (rule + anomaly model)
-                              +-> Energy service (EnergyOptimizer)
+                              +-> Risk service (rule + anomaly model neu co)
+                              +-> Energy service (EnergyOptimizer neu load duoc)
                               +-> Execute command -> Orion PATCH /entities/{id}/attrs
+
+FIWARE Subscription -> POST /api/webhook/anomaly -> alert_service
+                                            |
+                                            +-> WebSocket broadcast
+                                            +-> Forward robot API (http://127.0.0.1:8001/api/robot/alert)
 ```
 
 ---
 
-## Chi tiết tích hợp AI
+## Chi tiet tich hop AI
 
 ### Risk service
 
-- Đầu vào: dữ liệu sensor parse từ entity NGSI-v2
-
-- Cơ chế:
+- Dau vao: du lieu sensor parse tu entity NGSI-v2
+- Co che:
   - Rule threshold (temperature, smoke, CO2, AQI)
-  - AI anomaly model (Isolation Forest) nếu có model
-
+  - Thu model anomaly tu file `ai-models/training/models/anomaly_model.pkl`
+  - Neu model predict bat thuong (`-1`) thi cong them risk
 - Fallback:
-  - Nếu không load được model, hệ thống vẫn chạy theo rule-based
-
----
+  - Neu khong load duoc model, van tinh theo rule-based va them ly do `AI model chua san sang, dang dung rule-based`
 
 ### Energy service
 
-- Đầu vào: các SmartPlug entities từ Orion
-
-- Cơ chế:
-  - Gọi EnergyOptimizer trong ai-models/energy/energy_optimizer.py
-  - Trả về recommendations và fiware_commands
-
+- Dau vao: cac `SmartPlug` entities tu Orion
+- Neu co QuantumLeap: lay them lich su `power` (time-series) theo `lastN`
+- Co che:
+  - Dynamic load `EnergyOptimizer` tu `ai-models/energy/energy_optimizer.py`
+  - Uu tien feed du lieu lich su vao optimizer de detect idle on dinh hon
+  - Neu load duoc optimizer: tra ve `mode: ai`, recommendations, fiware_commands
 - Fallback:
-  - Nếu không load được optimizer/model, trả về kết quả rule-based
+  - Neu khong co time-series/khong load duoc optimizer/model: tra ve `mode: rule-based` + recommendation don gian
 
 ---
 
 ## Execute command API
 
-Endpoint: POST /api/energy/execute
+Endpoint: POST `/api/energy/execute`
 
-### Request mặc định (an toàn)
+### Request mac dinh (an toan)
 
 ```json
 {
@@ -121,9 +145,9 @@ Endpoint: POST /api/energy/execute
 }
 ```
 
----
+Khi khong truyen `commands`, backend tu dong lay danh sach command tu `/api/energy/analysis` (source = `ai-analysis`).
 
-### Request thực thi thật
+### Request thuc thi that
 
 ```json
 {
@@ -143,53 +167,68 @@ Endpoint: POST /api/energy/execute
 }
 ```
 
+### Response tong quan
+
+- `success`: true/false
+- `source`: `ai-analysis` | `request`
+- `dry_run`: true/false
+- `total_commands`: tong so command
+- `executed`: so command thanh cong
+- `failed`: so command that bai
+- `results`: ket qua tung command
+
+Luu y: hien backend chi ho tro command `toggle_smart_plug`; payload phai chua `payload.onOff.value`.
+
 ---
 
-### Response tổng quan
+## Webhook anomaly API
 
-- success: true/false
-- source: ai-analysis | request
-- dry_run: true/false
-- total_commands: tổng số command
-- executed: số command đã chạy
-- failed: số command lỗi
-- results: kết quả từng command
+Endpoint: POST `/api/webhook/anomaly`
+
+- Input: payload notification tu FIWARE subscription (`data` la danh sach entity)
+- Xu ly:
+  - Parse thanh danh sach alert
+  - Broadcast qua WebSocket manager
+  - Forward tung alert sang robot API
+- Response:
+  - `status`, `message`, `processed`, `forwarded`
 
 ---
 
-## Test tự động
+## Test tu dong
 
-Chạy regression test backend:
+Chay regression test backend:
 
 ```bash
 python -m pytest backend/tests -q
 ```
 
----
+### Bao gom cac test hien co
 
-### Bao gồm các test
-
-- Health endpoint
+- Health endpoint (`/health`)
 - Sensors list / detail / not-found
 - Risk summary / detail
 - Energy stats / analysis
-- Energy execute (dry-run và custom command)
+- Energy execute (dry-run va custom command)
 - WebSocket ping/pong
 
----
-
-## Lưu ý vận hành
-
-- `/api/energy/execute` nên để mặc định dry-run trong môi trường demo
-- Nếu bật execute thật, cần thêm API key / authorization trước khi public
-- Health check Orion sử dụng endpoint `/version` (không phải `/v2/version`)
-- Khi dùng Ctrl+C để dừng service, có thể thấy exit code 1 (bình thường)
+Luu y: file regression test hien chua cover endpoint webhook.
 
 ---
 
-## Gợi ý mở rộng
+## Luu y van hanh
 
-- Thêm authentication cho endpoint execute
-- Thêm whitelist device ID được phép điều khiển
-- Lưu lịch sử command vào MongoDB để audit
-- Thêm metrics và structured logging cho monitoring dashboard
+- `/api/energy/execute` nen de mac dinh `dry_run=true` trong moi truong demo
+- Neu bat execute that, nen bo sung auth/API key truoc khi expose
+- Health check Orion dung endpoint `/version` (khong phai `/v2/version`)
+- Alert history hien luu in-memory (mat khi restart service)
+
+---
+
+## Goi y mo rong
+
+- Them authentication cho endpoint execute va webhook
+- Them whitelist device ID duoc phep dieu khien
+- Luu lich su command vao database de audit
+- Bo sung test regression cho `/api/webhook/anomaly`
+- Them metrics va structured logging cho monitoring dashboard

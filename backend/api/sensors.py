@@ -5,6 +5,10 @@ from typing import List
 
 router = APIRouter(prefix="/api/sensors", tags=["Sensors"])
 
+# ==================== SENSORS ENDPOINTS ====================
+
+# Endpoint để lấy dữ liệu của 1 cảm biến
+# Endpoint này sẽ giúp người dùng có thể kiểm tra chi tiết dữ liệu của từng thiết bị cảm biến,
 @router.get("/{device_id}", response_model=SensorData)
 def get_sensor_by_id(device_id: str):
     """Lấy dữ liệu của 1 cảm biến"""
@@ -14,6 +18,10 @@ def get_sensor_by_id(device_id: str):
     return parse_entity_to_sensor(entity)
 
 @router.get("/", response_model=List[SensorData])
+
+# Endpoint để lấy dữ liệu của tất cả cảm biến
+# Endpoint này sẽ giúp người dùng có cái nhìn tổng quan về tình hình hoạt động của toàn bộ hệ thống cảm biến,
+# từ đó có thể dễ dàng nhận biết các vấn đề tiềm ẩn và đưa ra các biện pháp xử lý phù hợp để đảm bảo an toàn và hiệu quả cho hệ thống.
 def get_all_sensors():
     """Lấy tất cả dữ liệu cảm biến"""
     try:

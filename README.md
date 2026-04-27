@@ -155,11 +155,12 @@ docker compose -f fiware/docker-compose.yml up -d
 Kiểm tra Orion:
 
 - http://localhost:1026/version
+- http://localhost:8668/version (QuantumLeap)
 
 ### 6.2 Test CRUD entity với script mẫu
 
 ```bash
-python fiware/test_entities.py
+python fiware/test/test_entities.py
 ```
 
 Script test_entities.py đang theo flow an toàn: create, read, update, final check và không xóa entity cuối luồng.
@@ -168,6 +169,26 @@ Script test_entities.py đang theo flow an toàn: create, read, update, final ch
 
 ```bash
 python fiware/create_subscription.py
+
+```
+
+- 'curl -s http://localhost:1026/v2/subscriptions'
+  Api mặc định API mặc định của FIWARE Orion.
+
+---
+
+---
+
+### Taọ thêm subscription de luu time-series vao QuantumLeap/CrateDB:
+
+---
+
+- `curl "http://localhost:8668/v2/entities/[id]/attrs/power?lastN=20"`
+
+Đây là API của QuantumLeap , dùng để lấy lịch sử dữ liệu đã được lưu trong CrateDB.
+
+```bash
+python fiware/create_timeseries_subscription.py
 ```
 
 Mặc định webhook đang trỏ tới:

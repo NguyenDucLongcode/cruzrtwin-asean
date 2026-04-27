@@ -6,7 +6,7 @@ import time
 BASE_URL = "http://localhost:1026/v2"
 
 # ROOT PROJECT
-ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ENTITY_DIR = os.path.join(ROOT_DIR, "data-models", "entities")
 
 # =========================
@@ -64,9 +64,9 @@ print("\n1. CREATE entity...")
 entity_path = os.path.join(ENTITY_DIR, "TemperatureSensor.json")
 
 if create_entity(entity_path):
-    print("   ✅ Created")
+    print("   Created")
 else:
-    print("   ⚠️ Already exists or failed")
+    print("   Already exists or failed")
 
 time.sleep(1)
 
@@ -81,17 +81,17 @@ else:
 
 print("\n3. UPDATE entity...")
 if update_entity(ENTITY_ID, "temperature", 26.5):
-    print("   ✅ Updated temperature = 26.5°C")
+    print("   Updated temperature = 26.5°C")
 else:
-    print("   ❌ Update failed")
+    print("   Update failed")
 
 print("\n4. FINAL CHECK...")
 data = get_entity(ENTITY_ID)
 
 if data:
-    print("   ✅ Entity still exists in Orion")
+    print("   Entity still exists in Orion")
 else:
-    print("   ❌ Missing")
+    print("   Missing")
 
 print("\n" + "=" * 60)
 print("DONE (NO DELETE - DATA KEPT IN FIWARE)")

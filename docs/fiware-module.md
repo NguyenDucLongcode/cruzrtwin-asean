@@ -8,9 +8,10 @@ Module `fiware/` dùng để kết nối, kiểm tra và thao tác dữ liệu v
 
 ```text
 fiware/
-├── docker-compose.yml        # Chạy Orion + MongoDB
+├── docker-compose.yml        # Chạy Orion + MongoDB + QuantumLeap + CrateDB
 ├── test_entities.py          # Test luồng CRUD entity an toàn
 ├── create_subscription.py    # Tạo subscription nhận cảnh báo bất thường
+├── create_timeseries_subscription.py  # Tạo subscription đẩy dữ liệu sang QuantumLeap
 └── postman_collection.json   # Bộ request test nhanh bằng Postman
 ```
 
@@ -18,9 +19,10 @@ fiware/
 
 ## 🎯 Mục tiêu
 
-- Khởi chạy Orion Context Broker và MongoDB cục bộ
+- Khởi chạy Orion Context Broker, MongoDB, QuantumLeap, CrateDB cục bộ
 - Thực hiện CRUD trên entity NGSI-v2
 - Tạo subscription để đẩy notification ra webhook
+- Lưu lịch sử time-series để phục vụ analytics/AI
 - Làm cầu nối dữ liệu cho AI module
 
 ---
@@ -37,6 +39,12 @@ Kiểm tra Orion đã chạy:
 
 ```text
 http://localhost:1026/version
+```
+
+Kiem tra QuantumLeap:
+
+```text
+http://localhost:8668/version
 ```
 
 ---
@@ -78,14 +86,30 @@ Mặc định subscription:
 - Gửi notification đến webhook:
 
 ```text
-http://host.docker.internal:8000/webhook/anomaly
+http://host.docker.internal:8000/api/webhook/anomaly
 ```
 
 - `throttling = 5` giây
 
 ---
 
-## 🔄 4. Tích hợp FIMAT (Matter -> FIWARE realtime)
+## 🕒 4. Tạo subscription lưu Time-Series
+
+Script:
+
+```bash
+python fiware/create_timeseries_subscription.py
+```
+
+Subscription nay se forward thay doi entity tu Orion sang QuantumLeap (`http://quantumleap:8668/v2/notify`), sau do luu vao CrateDB.
+
+Kiem tra nhanh lich su (vi du attr `power`):
+
+```text
+http://localhost:8668/v2/entities/urn:ngsi-ld:SmartPlug:plug_001/attrs/power?lastN=20
+```
+
+## 🔄 5. Tích hợp FIMAT (Matter -> FIWARE realtime)
 
 Script:
 
@@ -125,6 +149,7 @@ Lưu ý: dừng bằng `Ctrl+C` có thể hiện `exit code 1`, đây là hành 
 - Xóa entity: `DELETE /entities/{entityId}`
 - Tạo subscription: `POST /subscriptions`
 - Xem subscriptions: `GET /subscriptions`
+- QuantumLeap lịch sử attr: `GET http://localhost:8668/v2/entities/{entityId}/attrs/{attrName}?lastN=20`
 
 ---
 

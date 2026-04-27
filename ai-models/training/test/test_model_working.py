@@ -32,7 +32,7 @@ for data, description in test_cases:
     # Chuyển list thành DataFrame có tên cột
     df = pd.DataFrame([data], columns=feature_names)
     pred = model.predict(df)[0]
-    result = "🔴 BẤT THƯỜNG" if pred == -1 else "🟢 BÌNH THƯỜNG"
+    result = "BẤT THƯỜNG" if pred == -1 else "BÌNH THƯỜNG"
     temp, hum, smoke, co2, power = data
     print(f"   {result} | {description}")
     print(f"        → temp={temp}°C, hum={hum}%, smoke={smoke}ppm, co2={co2}ppm, power={power}W")

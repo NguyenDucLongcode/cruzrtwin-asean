@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   mongo:
     image: mongo:4.4
@@ -24,8 +22,44 @@ services:
     networks:
       - fiware-net
 
+  cratedb:
+    image: crate:5.6.5
+    container_name: cratedb
+    restart: always
+    ports:
+      - "4200:4200"
+      - "4300:4300"
+      - "5432:5432"
+    command:
+      - crate
+      - -Ccluster.name=fiware-crate
+      - -Cauth.host_based.enabled=false
+      - -Ccluster.routing.allocation.disk.threshold_enabled=false
+    volumes:
+      - cruzrtwin_crate_data:/data
+    networks:
+      - fiware-net
+
+  quantumleap:
+    image: fiware/quantum-leap:latest
+    container_name: quantumleap
+    restart: always
+    depends_on:
+      - orion
+      - cratedb
+    ports:
+      - "8668:8668"
+    environment:
+      - CRATE_HOST=cratedb
+      - USE_GEOCODING=False
+      - LOGLEVEL=INFO
+    networks:
+      - fiware-net
+
 volumes:
   cruzrtwin_mongo_data:
+  cruzrtwin_crate_data:
 
 networks:
   fiware-net:
+    driver: bridge

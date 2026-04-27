@@ -59,7 +59,7 @@ try:
         temp, hum, smoke, co2, power = data
 
         if detected:
-            print(f"[CẢNH BÁO] {i+1:2d}. temp={temp:.1f}°C, hum={hum:.1f}%, smoke={smoke:.0f}ppm, co2={co2:.0f}ppm, power={power:.1f}W → 🔴 BẤT THƯỜNG")
+            print(f"[CẢNH BÁO] {i+1:2d}. temp={temp:.1f}°C, hum={hum:.1f}%, smoke={smoke:.0f}ppm, co2={co2:.0f}ppm, power={power:.1f}W → BẤT THƯỜNG")
         else:
             print(f"[BÌNH THƯỜNG] {i+1:2d}. temp={temp:.1f}°C, hum={hum:.1f}%, smoke={smoke:.0f}ppm, co2={co2:.0f}ppm, power={power:.1f}W")
 

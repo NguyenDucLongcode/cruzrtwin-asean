@@ -1,4 +1,6 @@
 FIWARE_ORION_URL = "http://localhost:1026/v2"
+FIWARE_QUANTUMLEAP_URL = "http://localhost:8668/v2"
+ENERGY_HISTORY_LAST_N = 20
 
 ALERT_THRESHOLD_TEMP = 35      # Nhiệt độ cao (°C)
 ALERT_THRESHOLD_SMOKE = 300    # Mức khói cao (ppm)
