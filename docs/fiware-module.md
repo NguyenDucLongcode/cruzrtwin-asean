@@ -85,6 +85,36 @@ http://host.docker.internal:8000/webhook/anomaly
 
 ---
 
+## 🔄 4. Tích hợp FIMAT (Matter -> FIWARE realtime)
+
+Script:
+
+```bash
+python fimat/fimat_service.py
+```
+
+Service FIMAT sẽ thực hiện:
+
+- `NodeAdded`: tự đăng ký entity `matter_*` lên Orion
+- `AttributeUpdated`: đồng bộ dữ liệu cảm biến theo thời gian thực
+- Tuân theo interval từng thiết bị trong `fimat/config.py`
+
+Các field mở rộng đã được đồng bộ:
+
+- `AirQualitySensor`: `pm25`, `pm10`, `co2`, `tvoc`, `aqi`
+- `SmartPlug`: `power`, `voltage`, `current`, `energyToday`, `onOff`
+
+Kiểm tra nhanh sau khi chạy:
+
+```powershell
+$entities = Invoke-RestMethod -Method Get -Uri "http://localhost:1026/v2/entities?limit=1000&options=keyValues"
+$entities | Where-Object { $_.id -like "matter_*" } | Select-Object id,type
+```
+
+Lưu ý: dừng bằng `Ctrl+C` có thể hiện `exit code 1`, đây là hành vi dừng tiến trình bình thường.
+
+---
+
 ## 🔗 Endpoints quan trọng
 
 - Orion base URL: `http://localhost:1026/v2`
@@ -103,6 +133,7 @@ http://host.docker.internal:8000/webhook/anomaly
 ```text
 data-models (JSON NGSI-v2)
 → FIWARE Orion
+→ FIMAT realtime sync (Matter simulation)
 → AI Module (Anomaly + Energy)
 → Notification/API/UI
 ```

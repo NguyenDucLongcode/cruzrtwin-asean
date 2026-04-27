@@ -18,6 +18,7 @@ Tài liệu này mô tả cách ánh xạ dữ liệu từ Matter clusters sang 
 | ElectricalMeasurement  | power         | power       | watt          |
 | ElectricalMeasurement  | voltage       | voltage     | volt          |
 | ElectricalMeasurement  | current       | current     | ampere        |
+| ElectricalMeasurement  | energyToday   | energyToday | kwh           |
 | SmokeDetection         | smokeLevel    | smokeLevel  | ppm           |
 
 ---
