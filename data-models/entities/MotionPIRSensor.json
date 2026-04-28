@@ -1,0 +1,20 @@
+{
+  "id": "motion_sensor_livingroom_001",
+  "type": "MotionSensor",
+  "TimeInstant": {
+    "type": "DateTime",
+    "value": "2026-04-28T15:00:00Z"
+  },
+  "motion_detected": {
+    "type": "Boolean",
+    "value": false
+  },
+  "battery": {
+    "type": "Number",
+    "value": 85
+  },
+  "status": {
+    "type": "Text",
+    "value": "online"
+  }
+}

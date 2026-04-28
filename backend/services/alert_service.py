@@ -170,14 +170,7 @@ async def process_anomaly_alert(payload: Dict) -> list:
         _print_safe(f"\n  STATE [{device_id}]")
         _print_safe(f"   Temp={temp}, Humidity={humidity}, Smoke={smoke}, CO2={co2}, Power={power}")
 
-         # ===== DEBOUNCE: Chỉ xử lý nếu đã qua 30 giây =====
-        alert_key = f"{device_id}_{temp}_{smoke}_{co2}"
-        last_time = _last_alert_sent.get(alert_key)
-
-        if last_time and (now - last_time).seconds < 30:
-            print(f"   Skip {device_id} (debounce 30s)")
-            continue
-
+       
         # ===== AI CHECK =====
         anomaly = is_anomaly(temp, humidity, smoke, co2, power)
 
@@ -189,6 +182,15 @@ async def process_anomaly_alert(payload: Dict) -> list:
 
         # ===== RULE-BASED CLASSIFY =====
         classification = classify_anomaly(temp, humidity, smoke, co2, power)
+
+        # ===== DEBOUNCE: Chỉ xử lý nếu đã qua 30 giây =====
+        alert_key = f"{classification['type']}_{classification['severity']}"
+        last_time = _last_alert_sent.get(alert_key)
+
+        if last_time and (now - last_time).total_seconds() < 30:
+            print(f"   Skip {device_id} (debounce 30s)")
+            continue
+
 
         _print_safe(f"   Type: {classification['type']} ({classification['severity']})")
 
@@ -204,6 +206,7 @@ async def process_anomaly_alert(payload: Dict) -> list:
             }
 
             alert_data["robot_forwarded"] = await send_to_robot_queue(alert_data)
+            _last_alert_sent[alert_key] = now
             store_alert(alert_data)
             alerts.append(alert_data)
         else:

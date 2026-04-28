@@ -10,7 +10,7 @@ print("1. Creating smart plug...")
 entity = {
     "id": DEVICE_ID,
     "type": "SmartPlug",
-    "power": {"type": "Number", "value": 50},
+    "power": {"type": "Number", "value": 110},
     "onOff": {"type": "Boolean", "value": True}
 }
 requests.delete(f"{FIWARE_URL}/entities/{DEVICE_ID}")

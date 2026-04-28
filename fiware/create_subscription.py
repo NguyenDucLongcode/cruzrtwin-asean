@@ -10,7 +10,7 @@ FIWARE_ORION_URL = "http://localhost:1026/v2"
 BACKEND_WEBHOOK_URL = "http://host.docker.internal:8000/api/webhook/anomaly"
 
 # ========== UNIFIED SUBSCRIPTION (KHÔNG FILTER) ==========
-unified_subscription = {
+Environment = {
     "description": "Monitor ALL sensor changes - backend handles anomaly detection",
     "subject": {
         "entities": [
@@ -43,6 +43,34 @@ unified_subscription = {
     "throttling": 2  # Tối thiểu 2 giây giữa các notification để tránh spam
 }
 
+# ========== LIVING ROOM SUBSCRIPTION (PHÒNG KHÁCH) ==========
+Living_Room = {
+    "description": "Living Room Energy Optimization - Auto turn off devices when no person detected",
+    "subject": {
+        "entities": [
+            {"idPattern": "motion_sensor_livingroom.*", "type": "MotionSensor"},  
+            {"idPattern": ".*SmartPlug.*", "type": "SmartPlug"}
+        ],
+        "condition": {
+            # Trigger khi motion hoặc công suất thiết bị thay đổi
+            "attrs": ["motion_detected", "power", "onOff"]  # Đã có onOff 
+        }
+    },
+    "notification": {
+        "http": {
+            "url": "http://host.docker.internal:8000/api/webhook/livingroom"
+        },
+        "attrs": [
+            "motion_detected",
+            "power", 
+            "onOff",
+            "TimeInstant"
+        ],
+        "metadata": ["dateCreated", "dateModified"]
+    },
+    "throttling": 1,
+    "status": "active"  # Nên thêm status active
+}
 
 # ========== CORE FUNCTIONS ==========
 
@@ -103,7 +131,8 @@ if __name__ == "__main__":
 
     # 2. Tạo mới
     print("\n Creating unified subscription...")
-    create_subscription(unified_subscription)
+    create_subscription(Environment)
+    create_subscription(Living_Room)
 
     # 3. Kiểm tra
     list_subscriptions()
