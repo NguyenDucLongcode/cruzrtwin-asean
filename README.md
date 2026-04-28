@@ -172,7 +172,8 @@ python fiware/create_subscription.py
 
 ```
 
-- 'curl -s http://localhost:1026/v2/subscriptions'
+- 'curl http://localhost:1026/v2/subscriptions'
+- `curl.exe -s http://localhost:1026/v2/subscriptions | python -m json.tool`
   Api mặc định API mặc định của FIWARE Orion.
 
 ---

@@ -1,5 +1,5 @@
 {
-  "id": "urn:ngsi-ld:SmartPlug:plug_001",
+  "id": "matter_SmartPlug_001",
   "type": "SmartPlug",
   "TimeInstant": {
     "type": "DateTime",
@@ -8,7 +8,7 @@
   },
   "power": {
     "type": "Number",
-    "value": 7.5,
+    "value": 120,
     "metadata": {
       "unit": {
         "value": "watt"
@@ -17,7 +17,7 @@
   },
   "voltage": {
     "type": "Number",
-    "value": 220.1,
+    "value": 220,
     "metadata": {
       "unit": {
         "value": "volt"
@@ -26,7 +26,7 @@
   },
   "current": {
     "type": "Number",
-    "value": 0.034,
+    "value": 0.55,
     "metadata": {
       "unit": {
         "value": "ampere"
@@ -35,7 +35,7 @@
   },
   "energyToday": {
     "type": "Number",
-    "value": 0.15,
+    "value": 1.2,
     "metadata": {
       "unit": {
         "value": "kwh"
@@ -49,7 +49,7 @@
   },
   "status": {
     "type": "Text",
-    "value": "idle",
+    "value": "active",
     "metadata": {}
   }
 }

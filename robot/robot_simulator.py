@@ -13,37 +13,26 @@ class CruzRobotSimulator:
         self.alert_history = []
         self.speech_history = []
         self.navigation_history = []
+        self.instruction_history = []  # Lưu instruction đã nhận
         
     def navigate_to(self, target_zone: str, x: float = None, y: float = None) -> Dict:
-        """
-        Di chuyển robot đến khu vực chỉ định
-        
-        Args:
-            target_zone: "living_room", "kitchen", "bedroom", "bathroom", "hallway"
-            x, y: tọa độ cụ thể (optional)
-        
-        Returns:
-            Kết quả di chuyển
-        """
+        """Di chuyển robot đến khu vực chỉ định"""
         print(f"\n🤖 [ROBOT] Navigating to: {target_zone}")
         print(f"   From: {self.current_position['zone']}")
         
-        # Mô phỏng thời gian di chuyển
         travel_time = random.uniform(2, 5)
         time.sleep(travel_time)
         
-        # Cập nhật vị trí
         self.current_position = {
             "zone": target_zone,
             "x": x if x else random.uniform(-5, 5),
             "y": y if y else random.uniform(-5, 5)
         }
-        self.battery -= travel_time * 2  # Giảm pin
+        self.battery -= travel_time * 2
         
-        # Lưu lịch sử
         self.navigation_history.append({
             "timestamp": datetime.now().isoformat(),
-            "from_zone": self.current_position['zone'] if len(self.navigation_history) > 0 else "home_base",
+            "from_zone": self.navigation_history[-1]['to_zone'] if self.navigation_history else "home_base",
             "to_zone": target_zone,
             "travel_time": round(travel_time, 1)
         })
@@ -60,27 +49,21 @@ class CruzRobotSimulator:
         }
     
     def show_alert(self, message: str, severity: str, duration: int = 10) -> Dict:
-        """
-        Hiển thị cảnh báo trên màn hình robot
-        
-        Args:
-            message: Nội dung cảnh báo
-            severity: "info", "warning", "critical"
-            duration: Thời gian hiển thị (giây)
-        """
+        """Hiển thị cảnh báo trên màn hình robot"""
         severity_icon = {
             "info": "ℹ️",
             "warning": "⚠️",
-            "critical": "🚨"
+            "critical": "🚨",
+            "high": "🔴",
+            "low": "🟢",
+            "none": "✅"
         }.get(severity, "🔔")
         
         print(f"\n{severity_icon} [ROBOT ALERT] ({severity.upper()}): {message}")
         print(f"   📱 Displaying on robot screen for {duration}s")
         
-        # Mô phỏng hiển thị
         time.sleep(0.5)
         
-        # Lưu lịch sử
         self.alert_history.append({
             "timestamp": datetime.now().isoformat(),
             "message": message,
@@ -90,25 +73,17 @@ class CruzRobotSimulator:
         
         return {
             "success": True,
-            "message": f"Alert displayed: {message}",
+            "message": f"Alert displayed: {message[:100]}...",
             "severity": severity
         }
     
     def speak(self, text: str, language: str = "vi-VN") -> Dict:
-        """
-        Phát giọng nói qua robot
-        
-        Args:
-            text: Nội dung cần nói
-            language: Ngôn ngữ (vi-VN, en-US)
-        """
+        """Phát giọng nói qua robot"""
         print(f"\n🗣️ [ROBOT SPEECH] ({language}): {text}")
         
-        # Mô phỏng thời gian nói
-        speech_time = len(text) / 15  # ~15 ký tự/giây
-        time.sleep(min(speech_time, 3))
+        speech_time = min(len(text) / 15, 3)
+        time.sleep(speech_time)
         
-        # Lưu lịch sử
         self.speech_history.append({
             "timestamp": datetime.now().isoformat(),
             "text": text,
@@ -122,16 +97,8 @@ class CruzRobotSimulator:
         }
     
     def control_device(self, device_id: str, action: str) -> Dict:
-        """
-        Điều khiển thiết bị Matter thông qua robot
-        
-        Args:
-            device_id: ID của smart plug/thiết bị
-            action: "on", "off", "toggle"
-        """
+        """Điều khiển thiết bị Matter thông qua robot"""
         print(f"\n🔌 [ROBOT DEVICE] {action.upper()} {device_id}")
-        
-        # Mô phỏng gửi lệnh Matter
         time.sleep(0.3)
         
         return {
@@ -155,15 +122,12 @@ class CruzRobotSimulator:
         }
     
     def get_navigation_history(self) -> list:
-        """Lấy lịch sử di chuyển"""
         return self.navigation_history
     
     def return_to_base(self) -> Dict:
-        """Quay về vị trí sạc"""
         return self.navigate_to("home_base", 0, 0)
 
 
-# Singleton instance
 _robot_instance = None
 
 def get_robot():

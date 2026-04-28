@@ -1,5 +1,5 @@
 {
-  "id": "urn:ngsi-ld:SmokeSensor:sensor_003",
+  "id": "matter_smoke_001",
   "type": "SmokeSensor",
   "TimeInstant": {
     "type": "DateTime",

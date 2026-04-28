@@ -5,6 +5,7 @@ import os
 from api import sensors, risk, energy, webhook, health, alerts
 from websocket.ws_handler import websocket_handler
 
+
 app = FastAPI(
     title="CruzrTwin ASEAN Backend API",
     description="REST API for dashboard",
@@ -24,6 +25,8 @@ app.add_middleware(
 api_routers = [sensors.router, risk.router, energy.router, webhook.router, health.router, alerts.router]
 for router in api_routers:
     app.include_router(router)
+
+
 
 # ==================== ROOT ENDPOINT ====================
 @app.get("/")

@@ -1,5 +1,5 @@
 {
-  "id": "urn:ngsi-ld:TemperatureSensor:sensor_001",
+  "id": "matter_temp_001",
   "type": "TemperatureSensor",
   "TimeInstant": {
     "type": "DateTime",

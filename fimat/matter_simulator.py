@@ -1,4 +1,3 @@
-# fimat/matter_simulator.py
 import random
 import time
 from datetime import datetime
@@ -21,6 +20,7 @@ class MatterDeviceSimulator:
         
         if self.device_type == "TemperatureSensor":
             value = round(random.uniform(22, 30), 1)
+            # value = round(random.uniform(38, 45), 1)  # ← Bất thường!
             attr_name = "temperature"
             unit = "celsius"
         elif self.device_type == "HumiditySensor":

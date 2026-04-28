@@ -80,7 +80,7 @@ def test_full_scenario():
     print("   2. Robot nhận lệnh di chuyển đến phòng bếp")
     response = requests.post(f"{ROBOT_API_URL}/api/robot/navigate",
                              json={"target_zone": "kitchen"})
-    print(f"      ✅ {response.json()['message']}")
+    print(f"      {response.json()['message']}")
     
     time.sleep(1)
     

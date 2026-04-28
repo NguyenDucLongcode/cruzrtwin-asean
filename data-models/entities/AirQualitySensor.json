@@ -1,5 +1,5 @@
 {
-  "id": "urn:ngsi-ld:AirQualitySensor:sensor_004",
+  "id": "matter_AirQuality_001",
   "type": "AirQualitySensor",
   "TimeInstant": {
     "type": "DateTime",

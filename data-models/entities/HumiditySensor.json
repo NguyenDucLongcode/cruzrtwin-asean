@@ -1,5 +1,5 @@
 {
-  "id": "urn:ngsi-ld:HumiditySensor:sensor_002",
+  "id": "matter_humid_001",
   "type": "HumiditySensor",
   "TimeInstant": {
     "type": "DateTime",
