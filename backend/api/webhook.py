@@ -3,7 +3,7 @@ from datetime import datetime
 import logging
 
 from services.alert_service import process_anomaly_alert
-from api.energy import process_livingroom_data  # 🔥 QUAN TRỌNG
+from api.energy import process_livingroom_data  # QUAN TRỌNG
 
 router = APIRouter(prefix="/api/webhook", tags=["Webhook"])
 logger = logging.getLogger(__name__)
@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 # ============================================================
-# 🔥 ANOMALY WEBHOOK (AI)
+# ANOMALY WEBHOOK (AI)
 # ============================================================
 @router.post("/anomaly")
 async def anomaly_webhook(request: Request):
@@ -34,7 +34,7 @@ async def anomaly_webhook(request: Request):
 
 
 # ============================================================
-# 🔥 LIVING ROOM WEBHOOK (ENERGY)
+# LIVING ROOM WEBHOOK (ENERGY)
 # ============================================================
 
 @router.post("/livingroom")
@@ -47,7 +47,7 @@ async def livingroom_webhook(request: Request):
         print(f"   Time: {datetime.now().strftime('%H:%M:%S')}")
         print("="*60)
 
-        # 👉 GỌI SERVICE XỬ LÝ
+        # GỌI SERVICE XỬ LÝ
         result = await process_livingroom_data(payload)
 
         return {

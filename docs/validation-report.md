@@ -1,6 +1,6 @@
 # 🔍 Validation Report: Subscription + Login Integration
 
-**Date:** 2026-04-27  
+**Date:** 2026-04-28  
 **Status:** ✅ **PASSED** (with recommendations)  
 **Assessed for:** Smart Home Production Deployment
 
@@ -12,9 +12,9 @@ The system has been comprehensively tested with newly added FIWARE Subscriptions
 
 ### Key Metrics
 
-- ✅ **Regression Tests:** 9/9 passing (100%)
-- ✅ **Subscription Health:** 3/3 active subscriptions
-- ✅ **Webhook Integration:** Fully operational
+- ✅ **Regression Tests:** 11/11 passing (100%)
+- ✅ **Subscription Health:** 3/3 active subscriptions (bao gồm Living_Room)
+- ✅ **Webhook Integration:** Fully operational (anomaly + livingroom)
 - ✅ **System Integration:** FIMAT → Orion → Backend → AI → WebSocket ✓
 - ⚠️ **Authentication:** Not yet implemented (recommended for production)
 
@@ -67,6 +67,12 @@ Result: ALL TESTS PASSING ✅
    Status: active
    Webhook: http://host.docker.internal:8000/api/webhook/anomaly
    Throttling: 5s
+
+✅ Living_Room Subscription
+    ID: 69eeeecccbc11b1dfb0a4420
+    Status: active
+    Webhook: http://host.docker.internal:8000/api/webhook/livingroom
+    Throttling: 5s
 ```
 
 **What this validates:**
@@ -90,6 +96,7 @@ Backend Processing:
 - Generate alert message ✅
 - Broadcast via WebSocket ✅
 - Queue for robot system ✅ (if T-14 available)
+- Debounce: backend sẽ tránh forward duplicate alerts trong 30s ✅
 ```
 
 **What this validates:**

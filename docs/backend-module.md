@@ -66,7 +66,8 @@ Trong `main.py`, backend include cac router sau:
 - GET `/api/energy/stats` : thong ke nang luong tong hop
 - GET `/api/energy/analysis` : phan tich nang luong chi tiet (AI/rule-based + recommendation + fiware_commands)
 - POST `/api/energy/execute` : thuc thi FIWARE command (mac dinh dry-run)
-- POST `/api/webhook/anomaly` : nhan anomaly alert tu FIWARE subscription
+- POST `/api/webhook/anomaly` : nhận anomaly alert từ FIWARE subscription
+- POST `/api/webhook/livingroom` : nhận notification living-room (motion + smartplug) — luồng năng lượng và motion sensor sẽ gửi về đây
 - GET `/api/alerts/` : lay danh sach alert gan nhat cho dashboard
 - GET `/api/alerts/latest` : lay alert moi nhat
 - WS `/ws` : kenh WebSocket cho connection message, ping/pong va alert
@@ -181,17 +182,24 @@ Luu y: hien backend chi ho tro command `toggle_smart_plug`; payload phai chua `p
 
 ---
 
-## Webhook anomaly API
+## Webhook anomaly & livingroom API
 
-Endpoint: POST `/api/webhook/anomaly`
+Endpoints:
 
-- Input: payload notification tu FIWARE subscription (`data` la danh sach entity)
-- Xu ly:
-  - Parse thanh danh sach alert
-  - Broadcast qua WebSocket manager
-  - Forward tung alert sang robot API
-- Response:
-  - `status`, `message`, `processed`, `forwarded`
+- POST `/api/webhook/anomaly` — nhận anomaly alerts từ các subscription chung
+- POST `/api/webhook/livingroom` — nhận notification chuyên dụng cho phòng khách (motion sensor + smartplug)
+
+Input: payload notification từ FIWARE subscription (`data` là danh sách entity)
+
+Xử lý chung:
+
+- Parse thành danh sách alert
+- Broadcast qua WebSocket manager
+- Forward alert sang robot API (được debounce ở backend: cùng một alert sẽ không được forward nhiều lần trong vòng 30s)
+
+Response:
+
+- `status`, `message`, `processed`, `forwarded`
 
 ---
 

@@ -33,3 +33,10 @@ Matter Device → Mapping Layer → NGSI JSON → FIWARE Orion
 
 - Mapping giúp hệ thống tương thích với thiết bị IoT thực tế
 - Dữ liệu Matter có thể cần scale (ví dụ: temperature /100)
+
+---
+
+## Living Room & SmartPlug
+
+- `OnOff` + `ElectricalMeasurement` (power, energyToday) thường dùng cho `SmartPlug` trong phòng khách.
+- Khi tạo subscription cho phòng khách, notification sẽ gửi về backend endpoint `/api/webhook/livingroom` để luồng energy optimizer và motion xử lý.
