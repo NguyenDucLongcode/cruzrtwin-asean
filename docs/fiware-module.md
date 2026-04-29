@@ -73,9 +73,10 @@ Ghi chú:
 
 ## 🔔 3. Tạo subscription cảnh báo
 
-Script:
+Chạy script trong môi trường ảo của project (để đảm bảo `requests` được cài):
 
-```bash
+```powershell
+.\.venv\Scripts\Activate.ps1
 python fiware/create_subscription.py
 ```
 
@@ -83,10 +84,11 @@ Mặc định subscription:
 
 - Theo dõi entity type `TemperatureSensor`
 - Theo dõi thuộc tính `temperature`
-- Gửi notification đến webhook:
+- Gửi notification đến webhook (ví dụ):
 
 ```text
 http://host.docker.internal:8000/api/webhook/anomaly
+http://host.docker.internal:8000/api/webhook/livingroom  # living-room (motion + smartplug)
 ```
 
 - `throttling = 5` giây

@@ -251,3 +251,22 @@ FIWARE Orion → AI Module (Anomaly + Energy Optimizer)
 - Visualization (matplotlib / seaborn)
 - API với FastAPI
 - Alert system (email / notification)
+
+---
+
+## 🔗 Tích hợp với Backend & FIWARE
+
+Để tích hợp module AI với backend/FIWARE:
+
+- Chạy script tạo subscription trong môi trường ảo của project:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+python fiware/create_subscription.py
+```
+
+- Subscription cho "living room" sẽ gửi notification về endpoint backend: `/api/webhook/livingroom` (motion + smartplug).
+- Khi backend nhận notification, luồng phân tích năng lượng sẽ gọi `EnergyOptimizer` (nếu module và path đúng). Nếu chạy tests hoặc chạy backend từ môi trường khác, đảm bảo `ai-models/energy` nằm trong `PYTHONPATH` hoặc dùng cấu hình import phù hợp.
+- Backend đã triển khai cơ chế debounce in-memory (30s) để tránh forward trùng lặp alert tới robot API; có test tương ứng: `backend/tests/test_alert_service_debounce.py`.
+
+---

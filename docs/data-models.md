@@ -129,3 +129,17 @@ FIWARE → AI (Isolation Forest) → Detect Anomaly
 - Streaming realtime (MQTT)
 - Dashboard visualization
 - Alert system
+
+---
+
+## 🔔 Ghi chú cho Living Room
+
+- Các entity `SmartPlug` và motion sensor (ví dụ `MotionPIRSensor.json`) thường được dùng cho luồng "living room".
+- Để nhận notification từ Orion cho phòng khách, tạo subscription (xem `fiware/create_subscription.py`). Nên chạy script trong `.venv`:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+python fiware/create_subscription.py
+```
+
+Subscription cho phòng khách mặc định sẽ gửi về `/api/webhook/livingroom` ở backend.

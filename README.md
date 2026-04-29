@@ -141,7 +141,7 @@ Nếu gặp tình trạng không tìm thấy file, hãy chạy lệnh trong thư
 Push một entity lên Orion để test nhanh:
 
 ```bash
-python data-models/test_fiware.py
+python data-models/seed_entities.py
 ```
 
 ## 6. FIWARE module
@@ -149,7 +149,7 @@ python data-models/test_fiware.py
 ### 6.1 Khởi động Orion + MongoDB
 
 ```bash
-docker compose -f fiware/docker-compose.yml up -d
+docker compose docker-compose  up -d
 ```
 
 Kiểm tra Orion:
@@ -167,14 +167,18 @@ Script test_entities.py đang theo flow an toàn: create, read, update, final ch
 
 ### 6.3 Tạo subscription
 
-```bash
-python fiware/create_subscription.py
+Chạy script tạo subscription trong môi trường ảo của project để đảm bảo các thư viện (ví dụ `requests`) được load đúng:
 
+Windows PowerShell (từ thư mục gốc project):
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+python fiware/create_subscription.py
 ```
 
-- 'curl http://localhost:1026/v2/subscriptions'
+- `curl http://localhost:1026/v2/subscriptions`
 - `curl.exe -s http://localhost:1026/v2/subscriptions | python -m json.tool`
-  Api mặc định API mặc định của FIWARE Orion.
+  (API mặc định của FIWARE Orion.)
 
 ---
 
@@ -192,11 +196,12 @@ python fiware/create_subscription.py
 python fiware/create_timeseries_subscription.py
 ```
 
-Mặc định webhook đang trỏ tới:
+Mặc định webhook đang trỏ tới (tùy script):
 
-- http://host.docker.internal:8000/webhook/anomaly
+- Living room subscription: http://host.docker.internal:8000/api/webhook/livingroom
+- Anomaly subscription: http://host.docker.internal:8000/api/webhook/anomaly
 
-Nếu service webhook của bạn dùng URL khác, cần sửa trong script create_subscription.py.
+Nếu service webhook của bạn dùng URL khác, sửa `fiware/create_subscription.py` cho phù hợp.
 
 ### 6.4 Chạy FIMAT (Matter -> FIWARE realtime)
 
