@@ -68,7 +68,7 @@ def execute_energy_commands_endpoint(request: ExecuteCommandsRequest):
 
 
 # ============================================================
-# 🔥 CORE: PROCESS LIVING ROOM DATA (FIWARE CALLS THIS)
+# CORE: PROCESS LIVING ROOM DATA (FIWARE CALLS THIS)
 # ============================================================
 
 from datetime import datetime, timedelta
@@ -229,18 +229,18 @@ async def process_idle_device(device_id: str, power: float, timestamp: datetime)
 # 🔌 TURN OFF DEVICE (FIWARE)
 # ============================================================
 
-async def turn_off_device(device_id: str):
+async def turn_off_device(device_id: str ):
     url = f"http://localhost:1026/v2/entities/{device_id}/attrs"
     payload = {"onOff": {"type": "Boolean", "value": False}}
 
     try:
         response = requests.patch(url, json=payload)
         if response.status_code == 204:
-            print(f"   ✅ OFF {device_id}")
+            print(f"   OFF {device_id}")
         else:
-            print(f"   ❌ ERROR {device_id}")
+            print(f"   ERROR {device_id}")
     except Exception as e:
-        print(f"   ❌ FIWARE ERROR: {e}")
+        print(f"   FIWARE ERROR: {e}")
         return
 
     # robot alert
@@ -250,7 +250,7 @@ async def turn_off_device(device_id: str):
                 "http://localhost:8001/api/robot/alert",
                 json={
                     "message": f"Đã tắt {device_id}",
-                    "severity": "info"
+                    "severity": "info",
                 },
                 timeout=2.0
             )

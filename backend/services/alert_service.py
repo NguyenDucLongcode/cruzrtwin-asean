@@ -111,8 +111,10 @@ async def send_to_robot_queue(alert: Dict):
     Robot sẽ nhận lệnh navigation đến khu vực có vấn đề
     """
     try:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient() as client:     
+            # Gửi POST request đến Robot API với payload alert
             response = await client.post(ROBOT_API_URL, json=alert, timeout=3.0)
+             
             if 200 <= response.status_code < 300:
                 print(f"   [ROBOT] Forwarded to robot queue (status={response.status_code})", flush=True)
                 try:

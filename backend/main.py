@@ -1,10 +1,18 @@
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 import os
-
+import subprocess
+import sys
+from contextlib import asynccontextmanager
 from api import sensors, risk, energy, webhook, health, alerts
 from websocket.ws_handler import websocket_handler
 
+# Khi FastAPI khởi động, sẽ chạy các script tạo subscription cho Fiware để nhận dữ liệu từ Orion Context Broker và TimeSeries Database.
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # ================= STARTUP =================
+    subprocess.Popen([sys.executable, "fiware/create_subscription.py"])
+    subprocess.Popen([sys.executable, "fiware/create_timeseries_subscription.py"])
 
 app = FastAPI(
     title="CruzrTwin ASEAN Backend API",
@@ -51,6 +59,7 @@ def root():
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket_handler(websocket)
+
 
 # ==================== RUN SERVER ====================
 if __name__ == "__main__":
