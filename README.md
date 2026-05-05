@@ -17,6 +17,14 @@ cruzrtwin-asean/
 |  |- energy/
 |  |  |- energy_optimizer.py
 |  |  `- energy_demo.py
+|  |- prediction/
+|  |  |- generate_risk_data.py
+|  |  |- train_risk_model.py
+|  |  |- risk_predictor.py
+|  |  |- risk_demo.py
+|  |  |- data/risk_history.csv
+|  |  |- models/
+|  |  `- test/
 |  `- training/
 |     |- generate_sensor_data.py
 |     |- train_anomaly_model.py
@@ -35,6 +43,7 @@ cruzrtwin-asean/
 |  `- postman_collection.json
 |- docs/
 |  |- ai-module.md
+|  |- risk-prediction.md
 |  |- data-models.md
 |  |- fiware-module.md
 |  `- matter-mapping.md
@@ -107,6 +116,30 @@ Lưu ý: script run_all_tests.py có bước nhấn Enter trước mỗi bài te
 python ai-models/energy/energy_demo.py
 ```
 
+6. Tạo dữ liệu risk prediction (T-011)
+
+```bash
+python ai-models/prediction/generate_risk_data.py
+```
+
+7. Train model dự đoán rủi ro
+
+```bash
+python ai-models/prediction/train_risk_model.py
+```
+
+8. Chạy demo risk prediction (3 scenario)
+
+```bash
+python ai-models/prediction/risk_demo.py
+```
+
+9. Chạy test risk prediction
+
+```bash
+python ai-models/prediction/test/test_risk_prediction.py
+```
+
 ## 5. Data models (NGSI-v2)
 
 Trong thư mục data-models/entities có các entity mẫu:
@@ -173,11 +206,14 @@ Sensor JSON (NGSI-v2)
 -> AI anomaly detection
 -> Energy idle detection
 -> Tạo FIWARE command để điều khiển SmartPlug
+-> Risk prediction (30 phút tiếp theo)
+-> Tạo RiskAlert entity -> Robot CRUZR action
 ```
 
 ## 8. Tài liệu chi tiết
 
 - docs/ai-module.md
+- docs/risk-prediction.md
 - docs/data-models.md
 - docs/fiware-module.md
 - docs/matter-mapping.md
