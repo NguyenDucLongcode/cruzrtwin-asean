@@ -19,7 +19,7 @@ subscription = {
     },
     "notification": {
         "http": {
-            "url": "http://host.docker.internal:8000/webhook/anomaly"
+            "url": "http://host.docker.internal:8000/webhook/fiware"
         },
         "attrs": ["temperature", "TimeInstant"]
     },

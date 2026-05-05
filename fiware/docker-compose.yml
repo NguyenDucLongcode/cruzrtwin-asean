@@ -24,8 +24,36 @@ services:
     networks:
       - fiware-net
 
+  iot-agent:
+    image: fiware/iotagent-json:latest
+    container_name: iot-agent
+    restart: always
+    depends_on:
+      - mongo
+      - orion
+    ports:
+      - "4041:4041"
+      - "7896:7896"
+    environment:
+      - IOTA_CB_HOST=orion
+      - IOTA_CB_PORT=1026
+      - IOTA_NORTH_PORT=4041
+      - IOTA_REGISTRY_TYPE=mongodb
+      - IOTA_MONGO_HOST=mongo
+      - IOTA_MONGO_PORT=27017
+      - IOTA_MONGO_DB=iotagentjson
+      - IOTA_HTTP_PORT=7896
+      - IOTA_PROVIDER_URL=http://iot-agent:4041
+      - IOTA_CB_NGSI_VERSION=v2
+      - IOTA_AUTOCAST=true
+      - IOTA_DEFAULT_RESOURCE=/iot/json
+      - IOTA_LOG_LEVEL=DEBUG
+    networks:
+      - fiware-net
+
 volumes:
   cruzrtwin_mongo_data:
 
 networks:
   fiware-net:
+

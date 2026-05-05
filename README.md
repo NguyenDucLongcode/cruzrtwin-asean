@@ -32,18 +32,29 @@ cruzrtwin-asean/
 |     |- data/sensor_data.csv
 |     |- models/
 |     `- test/
+|- backend/
+|  |- main.py
+|  `- routers/
+|     |- dashboard.py
+|     |- robot.py
+|     `- webhook.py
 |- data-models/
 |  |- entities/
 |  |- validate_entities.py
 |  `- test_fiware.py
 |- fiware/
 |  |- docker-compose.yml
+|  |- provision_devices.py
+|  |- iot_simulator.py
+|  |- iot_simulator_demo.py
 |  |- test_entities.py
 |  |- create_subscription.py
 |  `- postman_collection.json
 |- docs/
 |  |- ai-module.md
 |  |- risk-prediction.md
+|  |- backend-api.md
+|  |- iot-simulator.md
 |  |- data-models.md
 |  |- fiware-module.md
 |  `- matter-mapping.md
@@ -167,17 +178,34 @@ python data-models/test_fiware.py
 
 ## 6. FIWARE module
 
-### 6.1 Khởi động Orion + MongoDB
+### 6.1 Khởi động Orion + MongoDB + IoT Agent
 
 ```bash
 docker compose -f fiware/docker-compose.yml up -d
 ```
 
-Kiểm tra Orion:
+Kiểm tra services:
 
-- http://localhost:1026/version
+- Orion: http://localhost:1026/version
+- IoT Agent: http://localhost:4041/iot/about
 
-### 6.2 Test CRUD entity với script mẫu
+### 6.2 Đăng ký thiết bị IoT (provisioning)
+
+```bash
+python fiware/provision_devices.py
+```
+
+Đăng ký 5 thiết bị: TemperatureSensor, HumiditySensor, SmokeSensor, AirQualitySensor, SmartPlug.
+
+### 6.3 Chạy IoT Simulator
+
+```bash
+python fiware/iot_simulator.py                  # Normal mode
+python fiware/iot_simulator.py --mode anomaly    # Có inject anomaly
+python fiware/iot_simulator_demo.py              # Demo 3 scenario
+```
+
+### 6.4 Test CRUD entity với script mẫu
 
 ```bash
 python fiware/test_entities.py
@@ -185,7 +213,7 @@ python fiware/test_entities.py
 
 Script test_entities.py đang theo flow an toàn: create, read, update, final check và không xóa entity cuối luồng.
 
-### 6.3 Tạo subscription
+### 6.5 Tạo subscription
 
 ```bash
 python fiware/create_subscription.py
@@ -193,32 +221,44 @@ python fiware/create_subscription.py
 
 Mặc định webhook đang trỏ tới:
 
-- http://host.docker.internal:8000/webhook/anomaly
+- http://host.docker.internal:8000/webhook/fiware
 
 Nếu service webhook của bạn dùng URL khác, cần sửa trong script create_subscription.py.
 
-## 7. Luồng tích hợp tổng thể
+## 7. Khởi chạy Backend API (T-014, T-015, T-016)
+
+Backend là trung gian kết nối FIWARE, AI với Dashboard và Robot CRUZR.
+
+```bash
+uvicorn backend.main:app --reload --port 8000
+```
+
+Sau khi chạy, mở `http://localhost:8000/docs` để xem tài liệu Swagger UI tự động.
+
+## 8. Luồng tích hợp tổng thể
 
 ```text
-Sensor JSON (NGSI-v2)
--> Validate entities
--> FIWARE Orion
+IoT Simulator -> IoT Agent JSON (port 7896)
+-> FIWARE Orion (auto-mapping NGSI-v2)
 -> AI anomaly detection
 -> Energy idle detection
 -> Tạo FIWARE command để điều khiển SmartPlug
 -> Risk prediction (30 phút tiếp theo)
--> Tạo RiskAlert entity -> Robot CRUZR action
+-> Cảnh báo gửi tới Backend Webhook (/webhook/fiware)
+-> Backend push WebSocket tới Dashboard & tạo lệnh Robot CRUZR
 ```
 
-## 8. Tài liệu chi tiết
+## 9. Tài liệu chi tiết
 
 - docs/ai-module.md
 - docs/risk-prediction.md
+- docs/iot-simulator.md
+- docs/backend-api.md
 - docs/data-models.md
 - docs/fiware-module.md
 - docs/matter-mapping.md
 
-## 9. Troubleshooting nhanh
+## 10. Troubleshooting nhanh
 
 - Không kết nối được Orion: kiểm tra Docker containers mongo và orion đang chạy; kiểm tra port 1026 không bị xung đột.
 
@@ -230,7 +270,7 @@ python ai-models/training/train_anomaly_model.py
 
 - Lỗi không tìm thấy file entity khi validate: chạy script validate từ đúng thư mục data-models.
 
-## 10. Ghi chú
+## 11. Ghi chú
 
 - Đây là repository demo học tập và trình diễn luồng tích hợp
 - Dữ liệu training hiện tại là synthetic data
